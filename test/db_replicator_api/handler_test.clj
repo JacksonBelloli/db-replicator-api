@@ -1,14 +1,18 @@
 (ns db-replicator-api.handler-test
-  (:require [clojure.test :refer :all]
+  (:require [midje.sweet :refer :all]
             [ring.mock.request :as mock]
             [db-replicator-api.handler :refer :all]))
 
-(deftest test-app
-  (testing "main route"
-    (let [response (app (mock/request :get "/"))]
-      (is (= (:status response) 200))
-      (is (= (:body response) "Hello World"))))
 
-  (testing "not-found route"
-    (let [response (app (mock/request :get "/invalid"))]
-      (is (= (:status response) 404)))))
+(facts "Da um hello world na rota raiz"
+		(fact "o status da reposta e 200"
+				(let [response (app (mock/request :get "/"))]
+						(:status response) => 200))
+		(fact "o texto do corpo e hello world"
+				(let [response (app (mock/request :get "/"))]
+						(:body response) => "Hello World")))
+
+(facts "Rota invalida nao existe"
+		(fact "o codigo de erro e 404"
+				(let [response (app (mock/request :get "/invalid"))]
+						(:status response) => 404)))
