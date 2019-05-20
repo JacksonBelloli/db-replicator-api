@@ -19,7 +19,10 @@ To start without web:
 
     lein ring server-headless
     
-
+## Test
+ 
+    lein midje
+ 
 ## License
 
 Copyright © 2019 FIXME
