@@ -5,18 +5,21 @@
             [cheshire.core :as json]
             [db-replicator-api.config :refer :all]
             [db-replicator-api.util :refer :all]
-            [ring.middleware.json :refer [wrap-json-body]]))
+            [ring.middleware.json :refer [wrap-json-body]]
+            [db-replicator-api.database :refer :all]))
 
 (defroutes app-routes
   (GET "/" [] "Hello World")
   (GET "/get/data-bases" [] (->
                               (suported-database)
                               (generate-json)))
-  (GET "/get/replication" [] {})
+  (GET "/get/replication" [] (->
+                              (select-all)
+                              (generate-json)))
   (GET "/get/replication-process" [] {})
   (GET "/get/replication-table" [] {})
   (GET "/get/replication-direction" [] {})
-  (POST "/post/replication" request request)
+  (POST "/post/replication" request (insert-t :replication (:body request)))
   (POST "/post/replication-process" request {})
   (POST "/post/replication-table" request {})
   (POST "/post/replication-direction" request {})
