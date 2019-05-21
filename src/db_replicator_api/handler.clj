@@ -1,12 +1,12 @@
 (ns db-replicator-api.handler
-  (:require [compojure.core :refer :all]
-            [compojure.route :as route]
-            [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
-            [cheshire.core :as json]
-            [db-replicator-api.config :refer :all]
-            [db-replicator-api.util :refer :all]
-            [ring.middleware.json :refer [wrap-json-body]]
-            [db-replicator-api.database :refer :all]))
+	 (:require [compojure.core :refer :all]
+					[compojure.route :as route]
+					[ring.middleware.defaults :refer [wrap-defaults api-defaults]]
+					[cheshire.core :as json]
+					[db-replicator-api.config :refer :all]
+					[db-replicator-api.util :refer :all]
+					[ring.middleware.json :refer [wrap-json-body]]
+					[db-replicator-api.core-database :refer :all]))
 
 (defroutes app-routes
 	(GET "/" [] "Hello World")
@@ -25,7 +25,7 @@
 	(GET "/get/replication-direction" [] {})
 	(POST "/post/replication"
 		request
-		(core-db-insert :replication (:body request)))
+		(core-db-insert! :replication (:body request)))
 	(POST "/post/replication-process" request {})
 	(POST "/post/replication-table" request {})
 	(POST "/post/replication-direction" request {})

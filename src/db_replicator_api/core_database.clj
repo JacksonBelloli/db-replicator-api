@@ -1,6 +1,6 @@
-(ns db-replicator-api.database
-		(:require [clojure.java.jdbc :as jdbc]
-		 					[java-jdbc.sql :as sql]))
+(ns db-replicator-api.core-database
+	(:require [clojure.java.jdbc :as jdbc]
+					[java-jdbc.sql :as sql]))
 
 (def core-db
 	{
@@ -15,6 +15,6 @@
 	(jdbc/query core-db
 		(sql/select * table-name)))
 
-(defn core-db-insert
+(defn core-db-insert!
 	[table-name data]
 	(jdbc/insert! core-db table-name data))
