@@ -9,24 +9,30 @@
             [db-replicator-api.database :refer :all]))
 
 (defroutes app-routes
-  (GET "/" [] "Hello World")
-  (GET "/get/data-bases" [] (->
-                              (suported-database)
-                              (generate-json)))
-  (GET "/get/replication" [] (->
-                              (select-all :replication)
-                              (generate-json)))
-  (GET "/get/replication-process" [] {})
-  (GET "/get/replication-table" [] {})
-  (GET "/get/replication-direction" [] {})
-  (POST "/post/replication" request (insert-t :replication (:body request)))
-  (POST "/post/replication-process" request {})
-  (POST "/post/replication-table" request {})
-  (POST "/post/replication-direction" request {})
-  (route/not-found "Not Found"))
+	(GET "/" [] "Hello World")
+	(GET "/get/data-bases"
+		[]
+		(->
+			(suported-database)
+			(generate-json)))
+	(GET "/get/replication"
+		[]
+		(->
+			(core-db-select-all :replication)
+			(generate-json)))
+	(GET "/get/replication-process" [] {})
+	(GET "/get/replication-table" [] {})
+	(GET "/get/replication-direction" [] {})
+	(POST "/post/replication"
+		request
+		(core-db-insert :replication (:body request)))
+	(POST "/post/replication-process" request {})
+	(POST "/post/replication-table" request {})
+	(POST "/post/replication-direction" request {})
+	(route/not-found "Not Found"))
 
 
 (def app
-  (->
-    (wrap-defaults app-routes api-defaults)
-    (wrap-json-body {:keywords? true :bigdecimal? true})))
+	(->
+		(wrap-defaults app-routes api-defaults)
+		(wrap-json-body {:keywords? true :bigdecimal? true})))

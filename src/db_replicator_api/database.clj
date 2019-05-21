@@ -2,7 +2,7 @@
 		(:require [clojure.java.jdbc :as jdbc]
 		 					[java-jdbc.sql :as sql]))
 
-(def main-db
+(def core-db
 	{
 	 :dbtype "postgres"
 	 :dbname "master"
@@ -10,12 +10,11 @@
 	 :password "admin"
 	 })
 
-(defn select-all
+(defn core-db-select-all
 	[table-name]
-	(jdbc/query main-db
+	(jdbc/query core-db
 		(sql/select * table-name)))
 
-(defn insert-t
+(defn core-db-insert
 	[table data]
-	(println table data)
-	(jdbc/insert! main-db table data))
+	(jdbc/insert! core-db table data))
