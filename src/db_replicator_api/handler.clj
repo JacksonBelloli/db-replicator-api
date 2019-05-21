@@ -14,7 +14,7 @@
                               (suported-database)
                               (generate-json)))
   (GET "/get/replication" [] (->
-                              (select-all)
+                              (select-all :replication)
                               (generate-json)))
   (GET "/get/replication-process" [] {})
   (GET "/get/replication-table" [] {})
