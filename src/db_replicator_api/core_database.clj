@@ -4,11 +4,11 @@
 
 (def core-db
 	{
-	 :dbtype "postgres"
-	 :dbname "master"
-	 :user "admin"
-	 :password "admin"
-	 })
+		:dbtype "postgres"
+		:dbname "master"
+		:user "admin"
+		:password "admin"
+	})
 
 (defn core-db-select-all
 	[table-name]

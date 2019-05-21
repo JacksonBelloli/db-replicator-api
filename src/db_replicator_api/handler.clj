@@ -1,12 +1,12 @@
 (ns db-replicator-api.handler
 	 (:require [compojure.core :refer :all]
-					[compojure.route :as route]
-					[ring.middleware.defaults :refer [wrap-defaults api-defaults]]
-					[cheshire.core :as json]
-					[db-replicator-api.config :refer :all]
-					[db-replicator-api.util :refer :all]
-					[ring.middleware.json :refer [wrap-json-body]]
-					[db-replicator-api.core-database :refer :all]))
+							[compojure.route :as route]
+							[ring.middleware.defaults :refer [wrap-defaults api-defaults]]
+							[cheshire.core :as json]
+							[db-replicator-api.config :refer :all]
+							[db-replicator-api.util :refer :all]
+							[ring.middleware.json :refer [wrap-json-body]]
+							[db-replicator-api.core-database :refer :all]))
 
 (defroutes app-routes
 	(GET "/" [] "Hello World")
