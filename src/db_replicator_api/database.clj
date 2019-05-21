@@ -16,5 +16,5 @@
 		(sql/select * table-name)))
 
 (defn core-db-insert
-	[table data]
-	(jdbc/insert! core-db table data))
+	[table-name data]
+	(jdbc/insert! core-db table-name data))
