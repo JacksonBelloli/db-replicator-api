@@ -1,0 +1,6 @@
+{
+   "suported-database": [
+      "postgres",
+      "mysql"
+   ]
+}
