@@ -3,16 +3,11 @@
 							[compojure.route :as route]
 							[ring.middleware.defaults :refer [wrap-defaults api-defaults]]
 							[cheshire.core :as json]
+							[ring.middleware.json :refer [wrap-json-body]]
 							[db-replicator-api.config :refer :all]
 							[db-replicator-api.util :refer :all]
-							[ring.middleware.json :refer [wrap-json-body]]
 							[db-replicator-api.database :refer :all]))
 
-(def core-db
-	{:dbtype "postgres"
-	:dbname "master"
-	:user "admin"
-	:password "admin"})
 
 (defroutes app-routes
 	(GET "/" [] "Hello World")

@@ -10,6 +10,5 @@
 
 (defn handle-post-request
 	"Verifies if the request can be add to the database"
-	"TODO"
 	[request]
 	(:body request))
