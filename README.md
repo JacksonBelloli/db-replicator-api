@@ -1,5 +1,6 @@
 # db-replicator-api
 
+[![Build Status](https://travis-ci.com/iorix-project/db-replicator-api.svg?branch=master)](https://travis-ci.com/iorix-project/db-replicator-api/)
 ## Prerequisites
 
 You will need [Leiningen][] 2.0.0 or above installed.
