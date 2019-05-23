@@ -20,8 +20,9 @@
 			(generate-json {:acess "Acesso Negado"} 401)))
 	(POST "/post/:table"
 		request
-			(do
-				(db-insert! config/core-db (:table (:params request)) (:body request))))
+			(if (validator/get-valid? (:params request))
+				(db-insert! config/core-db (:table (:params request)) (:body request))
+				(generate-json {:acess "Acesso Negado"} 401)))
 	(route/not-found "Not Found"))
 
 

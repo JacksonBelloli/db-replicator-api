@@ -2,8 +2,8 @@
    (:require [db-replicator-api.util :as util]))
 
 (defn api-valid?
-   [hash-code data]
-   (= hash-code (util/md5 data)))
+   [code data]
+   (= code (util/md5 (str data "protoss"))))
 
 (defn get-valid?
    [params]
@@ -12,7 +12,10 @@
       (= (contains?  params :id) false) false
       :else (api-valid? (:code params) (:id params))))
 
-
 (defn post-valid?
-   [request]
-   true)
+   [params]
+   (cond
+      (= (contains?  params :code) false) false
+      (= (contains?  params :id) false) false
+      (= (contains?  params :table) false) false
+      :else (api-valid? (:code params) (:id params))))
