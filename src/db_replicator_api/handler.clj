@@ -11,23 +11,16 @@
 
 (defroutes app-routes
 	(GET "/" [] "Hello World")
-	(GET "/get/data-bases"
-		[]
-			"TO DO ")
-	(GET "/get/replication"
-		[]
+	(GET "/get/:table/all"
+		[table-name]
 		(->
-			(db-select-all (config/core-db) :replication)
+			(db-select-all config/core-db table-name)
 			(generate-json)))
-	(GET "/get/replication-process" [] {})
-	(GET "/get/replication-table" [] {})
-	(GET "/get/replication-direction" [] {})
-	(POST "/post/replication"
+	(POST "/post/:table"
 		request
-			(db-insert! (config/core-db) :replication (handle-post-request request)))
-	(POST "/post/replication-process" request {})
-	(POST "/post/replication-table" request {})
-	(POST "/post/replication-direction" request {})
+			(do
+				(println (:table (:params request)) (handle-post-request request))
+				(db-insert! config/core-db (:table (:params request)) (handle-post-request request))))
 	(route/not-found "Not Found"))
 
 
