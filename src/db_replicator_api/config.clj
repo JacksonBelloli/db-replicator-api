@@ -1,21 +1,7 @@
-(ns db-replicator-api.config)
+(ns db-replicator-api.config
+	(:require [cheshire.core :as cheshire]))
 
-"
-TODO
-ALL CONFIG INFORMATION NEED TO BE IMPORTED OF A FILE
-"
-(defn suported-database
-	[]
-	[{:id 1
-		:name "postgres"
-		:url ""}
-	 {:id 2
-		:name "mysql"
-		:url ""}
-	 ])
-
-(def core-db
-	{:dbtype "postgres"
-	:dbname "master"
-	:user "admin"
-	:password "admin"})
+(defn core-db []
+	(do
+		(println "test")
+		(cheshire/parse-string (slurp "config/core-db.json") true)))
