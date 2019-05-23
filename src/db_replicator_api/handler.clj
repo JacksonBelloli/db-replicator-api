@@ -14,9 +14,14 @@
 	(GET "/get/:table/all"
 		[table & params]
 		(if (validator/get-valid? params)
-			(->
-				(db-select-all config/core-db table)
-				(generate-json))
+			(let [arguments (validator/remove-code-from-arguments params)]
+				(if (= 0 (count arguments))
+					(->
+						(db-select-all config/core-db table)
+						(generate-json))
+					(->
+						(db-select-all-where config/core-db table arguments)
+						(generate-json))))
 			(generate-json {:acess "Acesso Negado"} 401)))
 	(POST "/post/:table"
 		request

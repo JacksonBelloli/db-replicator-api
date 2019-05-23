@@ -16,7 +16,7 @@
 	(map db-insert! data))
 
 (defn db-select-all-where
-	[database table-name condicions]
+	[database table-name conditions]
 	(jdbc/query database
 		(sql/select * table-name
-			(sql/where condicions))))
+			(sql/where conditions))))

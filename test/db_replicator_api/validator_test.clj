@@ -14,11 +14,11 @@
 	(fact "api get is valid"
 		true =>
 				(validator/get-valid?
-					{:id "123456" :code "81f0c2e5f646b361c3736bfbe6be8db5"}))
+					{:code1 "123456" :code2 "81f0c2e5f646b361c3736bfbe6be8db5"}))
 	(fact "api get is valid"
 		false =>
 				(validator/get-valid?
-					{:id "123456" :code "e8adc3949ba59abbe56e057f20f883e"}))
+					{:code1 "123456" :code2 "e8adc3949ba59abbe56e057f20f883e"}))
 	(fact "api post is valid"
 		true =>
 				(validator/post-valid?
