@@ -4,23 +4,24 @@
 							[ring.middleware.defaults :refer [wrap-defaults api-defaults]]
 							[cheshire.core :as cheshire]
 							[ring.middleware.json :refer [wrap-json-body]]
-							[db-replicator-api.config :as config]
+							[db-replicator-api.configuration :as config]
 							[db-replicator-api.util :refer :all]
-							[db-replicator-api.database :refer :all]))
+							[db-replicator-api.database :refer :all]
+							[db-replicator-api.validator :as validator]))
 
 
 (defroutes app-routes
-	(GET "/" [] "Hello World")
 	(GET "/get/:table/all"
-		[table-name]
-		(->
-			(db-select-all config/core-db table-name)
-			(generate-json)))
+		[table & params]
+		(if (validator/get-valid? params)
+			(->
+				(db-select-all config/core-db table)
+				(generate-json))
+			(generate-json {:acess "Acesso Negado"} 401)))
 	(POST "/post/:table"
 		request
 			(do
-				(println (:table (:params request)) (handle-post-request request))
-				(db-insert! config/core-db (:table (:params request)) (handle-post-request request))))
+				(db-insert! config/core-db (:table (:params request)) (:body request))))
 	(route/not-found "Not Found"))
 
 

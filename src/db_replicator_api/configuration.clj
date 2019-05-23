@@ -1,7 +1,6 @@
-(ns db-replicator-api.config
+(ns db-replicator-api.configuration
 	(:require [cheshire.core :as cheshire]))
 
 (def core-db
 	(do
-		(println "test")
 		(cheshire/parse-string (slurp "config/core-db.json") true)))
