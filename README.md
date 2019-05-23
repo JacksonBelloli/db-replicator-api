@@ -8,7 +8,7 @@ You will need [Leiningen][] 2.0.0 or above installed.
 
 ## Installing
 
-1. create a file with the core database (/config/core-db.json)
+1. create a file with the core database (/config/core-db.json) The default:
 ```json
 {
    "dbtype": "postgresql",
