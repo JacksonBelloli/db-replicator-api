@@ -5,7 +5,7 @@
 (defn db-select-all
 	[database table-name]
 	(jdbc/query database
-		(sql/select * table-name (sql/where {:dt_deleted nil}))))
+		(sql/select * table-name)))
 
 (defn db-insert!
 	[database table-name data]

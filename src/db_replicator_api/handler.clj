@@ -7,7 +7,8 @@
 							[db-replicator-api.configuration :as config]
 							[db-replicator-api.util :refer :all]
 							[db-replicator-api.database :refer :all]
-							[db-replicator-api.validator :as validator]))
+							[db-replicator-api.validator :as validator]
+							[db-replicator-api.replicator :as replicator]))
 
 
 (defroutes app-routes
@@ -23,11 +24,18 @@
 						(db-select-all-where config/core-db table arguments)
 						(generate-json))))
 			(generate-json {:acess "Acesso Negado"} 401)))
+	(GET "/execute/:process"
+		[process]
+		(println process)
+		(->
+			(replicator/init config/core-db process)
+			(generate-json)))
 	(POST "/post/:table"
 		request
 			(if (validator/get-valid? (:params request))
 				(db-insert! config/core-db (:table (:params request)) (:body request))
 				(generate-json {:acess "Acesso Negado"} 401)))
+
 	(route/not-found "Not Found"))
 
 
