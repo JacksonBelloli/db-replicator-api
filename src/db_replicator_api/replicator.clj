@@ -29,7 +29,11 @@
 
 (defn execute-changes
    [order core-db process direction origin destin element]
-      (db-insert! destin (get order :table_destin) element))
+   (let [key-name (keyword (get order :key_name))]
+      (let [contitions {key-name (get element key-name)} table (get order :table_destin)]
+         (if (= 0 (count (db-select-all-where destin table contitions)))
+            (db-insert! destin table element)
+            (db-update-where! destin table element contitions)))))
 
 (defn execute-elements
    [order core-db process direction origin destin origin-elements destin-elements]

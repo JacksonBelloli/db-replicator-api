@@ -21,11 +21,9 @@
 		(sql/select * table-name
 			(sql/where conditions))))
 
-(defn db-update-where
-	[database table-name conditions]
-	(jdbc/query database
-		(sql/update table-name
-			(sql/where conditions))))
+(defn db-update-where!
+	[database table-name data conditions]
+	(jdbc/update! database table-name data (sql/where conditions)))
 
 (defn db-delete-where
 	[database table-name conditions]
