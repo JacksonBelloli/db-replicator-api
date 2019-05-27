@@ -20,3 +20,15 @@
 	(jdbc/query database
 		(sql/select * table-name
 			(sql/where conditions))))
+
+(defn db-update-where
+	[database table-name conditions]
+	(jdbc/query database
+		(sql/update table-name
+			(sql/where conditions))))
+
+(defn db-delete-where
+	[database table-name conditions]
+	(jdbc/query database
+		(sql/delete table-name
+			(sql/where conditions))))

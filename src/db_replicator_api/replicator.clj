@@ -27,10 +27,25 @@
       [(get-db core-db (:id_origin direction))
       (get-db core-db (:id_destin direction))])
 
+(defn execute-changes
+   [order core-db process direction origin destin element]
+      (db-insert! destin (get order :table_destin) element))
+
+(defn execute-elements
+   [order core-db process direction origin destin origin-elements destin-elements]
+   (loop [x (- (count origin-elements) 1)]
+      (when (> x -1)
+         (let [element-origin (nth origin-elements x)]
+            (println "t")
+            (if-not (some #(= % element-origin) destin-elements)
+                  (execute-changes order core-db process direction origin destin element-origin)))
+         (recur (- x 1)))))
+
 (defn execute-table
    [order core-db process direction origin destin]
-   (println origin)
-   (db-select-all origin (get order :table_origim)))
+   (execute-elements order core-db process direction origin destin
+                     (db-select-all origin (get order :table_origim))
+                     (db-select-all destin (get order :table_destin))))
 
 (defn execute
    ([core-db process]
