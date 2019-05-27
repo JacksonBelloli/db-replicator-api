@@ -71,8 +71,6 @@
                   (execute-table (nth order x) core-db process direction db_origin db_destin)
             (recur (- x 1)))))))
 
-
-
 (defn init
    [core-db process-id]
    (execute core-db (first (db-select-all-where core-db :Process {:id process-id}))))
