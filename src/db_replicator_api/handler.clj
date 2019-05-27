@@ -26,7 +26,7 @@
 			(generate-json {:acess "Acesso Negado"} 401)))
 	(GET "/execute/:process"
 		[process]
-		(println process)
+		(println "Processo" process "iniciado...")
 		(->
 			(replicator/init config/core-db process)
 			(generate-json)))

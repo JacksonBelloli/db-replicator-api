@@ -29,6 +29,7 @@
 
 (defn execute-changes
    [order core-db process direction origin destin element]
+   (println "Replicando um elemento")
    (let [key-name (keyword (get order :key_name))]
       (let [contitions {key-name (get element key-name)} table (get order :table_destin)]
          (if (= 0 (count (db-select-all-where destin table contitions)))
@@ -40,7 +41,6 @@
    (loop [x (- (count origin-elements) 1)]
       (when (> x -1)
          (let [element-origin (nth origin-elements x)]
-            (println "t")
             (if-not (some #(= % element-origin) destin-elements)
                   (execute-changes order core-db process direction origin destin element-origin)))
          (recur (- x 1)))))
@@ -60,6 +60,7 @@
    ([core-db process order direction]
       (execute core-db process order direction (get-direction-information core-db direction)))
    ([core-db process order direction [origin destin]]
+      (println "Inciando replicacao de tabelas...")
       (loop [x (- (count order) 1)]
          (when (> x -1)
             (let [db_origin (generate-db (:db_type origin) (:name origin)
