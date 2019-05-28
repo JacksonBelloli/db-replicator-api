@@ -48,7 +48,7 @@
 (defn execute-table
    [order core-db process direction origin destin]
    (execute-elements order core-db process direction origin destin
-                     (db-select-all origin (get order :table_origim))
+                     (db-select-all origin (get order :table_origin))
                      (db-select-all destin (get order :table_destin))))
 
 (defn execute
