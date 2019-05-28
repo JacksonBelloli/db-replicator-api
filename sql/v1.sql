@@ -203,3 +203,4 @@ ALTER TABLE `UserDatabase` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEF
 
 ALTER TABLE `OrderProcess` ADD `key_name` VARCHAR(255) NOT NULL AFTER `error`;
 ALTER TABLE `OrderProcess` CHANGE `table_origim` `table_origin` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+ALTER TABLE `UserDatabase` DROP `url`;
