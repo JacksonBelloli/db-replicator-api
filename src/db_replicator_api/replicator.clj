@@ -33,21 +33,26 @@
    (let [key-name (keyword (get order :key_name))]
       (let [contitions {key-name (get element key-name)} table (get order :table_destin)]
          (if (= 0 (count (db-select-all-where destin table contitions)))
-            (db-insert! destin table element)
-            (db-update-where! destin table element contitions)))))
+               (db-insert! destin table element)
+               (db-update-where! destin table element contitions)))))
 
 (defn execute-elements
-   [order core-db origin destin origin-elements destin-elements]
-   (loop [x (- (count origin-elements) 1)]
-      (when (> x -1)
-         (let [element-origin (nth origin-elements x)]
-            (if-not (some #(= % element-origin) destin-elements)
-                  (execute-changes order core-db origin destin element-origin)))
-         (recur (- x 1)))))
+   [index order core-db origin destin origin-elements destin-elements]
+   (println index)
+   (if (< index (count origin-elements))
+      (let [element-origin (nth origin-elements index)
+            key-name (keyword (get order :key_name))]
+         (if-not (some #(= % element-origin) destin-elements)
+            (do
+               (execute-changes order core-db origin destin element-origin)
+               (recur (inc index) order core-db origin destin origin-elements
+                  (remove #(= (get % key-name) (get element-origin key-name)) destin-elements)))
+            (recur (inc index) order core-db origin destin origin-elements destin-elements)))))
+
 
 (defn execute-table
    [order core-db process direction origin destin]
-   (execute-elements order core-db origin destin
+   (execute-elements 0 order core-db origin destin
                      (db-select-all origin (get order :table_origin))
                      (db-select-all destin (get order :table_destin))))
 
