@@ -15,10 +15,10 @@
 (defn post-valid?
    [params]
    (cond
-      (= (contains?  params :code) false) false
-      (= (contains?  params :id) false) false
+      (= (contains?  params :code1) false) false
+      (= (contains?  params :code2) false) false
       (= (contains?  params :table) false) false
-      :else (api-valid? (:code params) (:id params))))
+      :else (api-valid? (:code2 params) (:code1 params))))
 
 (defn remove-code-from-arguments
    [arguments]
