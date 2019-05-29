@@ -15,8 +15,8 @@
    (first (db-select-all-where core-db :UserDatabase {:id db-id})))
 
 (defn get-db-direction
-   [core-db process-id]
-   (first (db-select-all-where core-db :DirectionProcess {:id_process process-id})))
+   [core-db direction-id]
+   (first (db-select-all-where core-db :DirectionProcess {:id direction-id})))
 
 (defn get-table-order
    [core-db process-id]
@@ -71,11 +71,9 @@
                      (db-select-all destin (get order :table_destin))))
 
 (defn execute
-   ([core-db process]
+   ([core-db process direction]
       (let [id (:id process)]
-         (execute core-db process
-               (get-table-order core-db id)
-               (get-db-direction core-db id))))
+         (execute core-db process (get-table-order core-db id) direction)))
    ([core-db process order direction]
       (execute 0 core-db process order direction (get-direction-information core-db direction)))
    ([index core-db process order direction [origin destin]]
@@ -90,6 +88,8 @@
          (recur (inc index) core-db process order direction [origin destin])))))
 
 (defn init
-   [core-db process-id]
+   [core-db process-id direction-id]
    (println "Inciando replicacao de tabelas...")
-   (execute core-db (first (db-select-all-where core-db :Process {:id process-id}))))
+   (execute core-db
+         (first (db-select-all-where core-db :Process {:id process-id}))
+         (get-db-direction core-db direction-id)))

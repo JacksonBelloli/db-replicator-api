@@ -24,11 +24,11 @@
 						(db-select-all-where config/core-db table arguments)
 						(generate-json))))
 			(generate-json {:acess "Acesso Negado"} 401)))
-	(GET "/execute/:process"
-		[process]
-		(println "Processo" process "iniciado...")
+	(GET "/execute/:process/:direction"
+		[process direction]
+		(println "Processo" process " direcao " direction "iniciado...")
 		(->
-			(replicator/init config/core-db process)
+			(replicator/init config/core-db process direction)
 			(generate-json)))
 	(POST "/post/:table"
 		request
