@@ -209,3 +209,6 @@ ALTER TABLE `OrderProcess` CHANGE `order` `order_process` INT(11) NOT NULL;
 ALTER TABLE OrderProcess DROP FOREIGN KEY FK_60;
 ALTER TABLE `OrderProcess` DROP `key_type`;
 DROP TABLE KeyType
+
+ALTER TABLE `DirectionProcess` DROP `retention`;
+ALTER TABLE `DirectionProcess` DROP `duration`;
