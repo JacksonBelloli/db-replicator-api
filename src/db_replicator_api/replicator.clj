@@ -62,7 +62,7 @@
                      (remove #(= (get % key-name) (get element-origin key-name)) destin-elements)))
             (recur (inc index) order core-db origin destin origin-elements
                   (remove #(= (get % key-name) (get element-origin key-name)) destin-elements))))
-      (remove-extra-elements 0 order core-db destin destin-elements)))
+      (if destin-elements (remove-extra-elements 0 order core-db destin destin-elements))))
 
 (defn execute-table
    [order core-db process direction origin destin]
