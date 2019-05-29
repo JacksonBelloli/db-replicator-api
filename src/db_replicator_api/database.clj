@@ -7,19 +7,22 @@
 	(jdbc/query database
 		(sql/select * table-name)))
 
-(defn db-insert!
-	[database table-name data]
-	(jdbc/insert! database table-name data))
-
-(defn db-insert-multi!
-	[database table data]
-	(map db-insert! data))
-
 (defn db-select-all-where
 	[database table-name conditions]
 	(jdbc/query database
 		(sql/select * table-name
 			(sql/where conditions))))
+
+(defn db-select-all-where-order
+	[database table-name conditions order]
+	(jdbc/query database
+		(sql/select * table-name
+			(sql/where conditions)
+			(sql/order-by order))))
+
+(defn db-insert!
+	[database table-name data]
+	(jdbc/insert! database table-name data))
 
 (defn db-update-where!
 	[database table-name data conditions]
@@ -27,6 +30,4 @@
 
 (defn db-delete-where
 	[database table-name conditions]
-	(jdbc/query database
-		(sql/delete table-name
-			(sql/where conditions))))
+	(jdbc/delete! database table-name (sql/where conditions)))
