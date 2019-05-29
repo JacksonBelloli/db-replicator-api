@@ -29,11 +29,14 @@
 
 (defn remove-extra-elements
    [index order core-db destin destin-elements]
+   (println destin-elements)
    (if (< index (count destin-elements))
-      (println "Removendo um elemento")
-      (let [key-name (keyword (get order :key_name))]
-         (db-delete-where destin (get order :table_destin)
-               {key-name (get (nth destin-elements index) key-name)}))))
+      (do
+         (println "Removendo um elemento")
+         (let [key-name (keyword (get order :key_name))]
+            (db-delete-where destin (get order :table_destin)
+                  {key-name (get (nth destin-elements index) key-name)}))
+         (recur (inc index) order core-db destin destin-elements))))
 
 (defn execute-changes
    [order core-db origin destin element]
