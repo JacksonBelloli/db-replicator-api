@@ -1,14 +1,6 @@
 (ns db-replicator-api.replicator
-   (:require [db-replicator-api.database :refer :all]))
-
-(defn generate-db
-   [dbtype dbname host port user password]
-   {:dbtype dbtype
-   :dbname dbname
-   :host host
-   :port port
-   :user user
-   :password password})
+   (:require [db-replicator-api.database :refer :all]
+            [db-replicator-api.util :refer :all]))
 
 (defn get-db
    [core-db db-id]
@@ -28,55 +20,70 @@
       (get-db core-db (:id_destin direction))])
 
 (defn remove-extra-elements
-   [index order core-db destin destin-elements]
+   [index order core-db process destin destin-elements id-execution]
    (if (< index (count destin-elements))
       (do
-         (println "Removendo um elemento")
+         (db-insert! core-db :LogsProcess
+               (generate-logs id-execution "Removendo um elemento" 3 (:id_user process)))
          (let [key-name (keyword (get order :key_name))]
             (db-delete-where destin (get order :table_destin)
                   {key-name (get (nth destin-elements index) key-name)}))
-         (recur (inc index) order core-db destin destin-elements))))
+         (recur (inc index) order core-db process destin destin-elements id-execution))))
 
 (defn execute-changes
-   [order core-db origin destin element]
+   [order core-db process origin destin element id-execution]
    (let [key-name (keyword (get order :key_name))]
       (let [contitions {key-name (get element key-name)} table (get order :table_destin)]
          (if (= 0 (count (db-select-all-where destin table contitions)))
                (do
-                  (println "Inserindo novo elemento")
+                  (db-insert! core-db :LogsProcess
+                        (generate-logs id-execution "Inserindo novo elemento" 1 (:id_user process)))
                   (db-insert! destin table element))
                (do
-                  (println "Atualizando um elemento")
+                  (db-insert! core-db :LogsProcess
+                        (generate-logs id-execution "Atualizando um elemento" 2 (:id_user process)))
                   (db-update-where! destin table element contitions))))))
 
 (defn execute-elements
-   [index order core-db origin destin origin-elements destin-elements]
+   [index order core-db process origin destin origin-elements destin-elements id-execution]
    (if (< index (count origin-elements))
       (let [element-origin (nth origin-elements index)
             key-name (keyword (get order :key_name))]
          (if-not (some #(= % element-origin) destin-elements)
             (do
-               (execute-changes order core-db origin destin element-origin)
-               (recur (inc index) order core-db origin destin origin-elements
-                     (remove #(= (get % key-name) (get element-origin key-name)) destin-elements)))
-            (recur (inc index) order core-db origin destin origin-elements
-                  (remove #(= (get % key-name) (get element-origin key-name)) destin-elements))))
-      (remove-extra-elements 0 order core-db destin destin-elements)))
+               (execute-changes order core-db process origin destin element-origin id-execution)
+               (recur (inc index) order core-db process origin destin origin-elements
+                     (remove #(= (get % key-name) (get element-origin key-name)) destin-elements) id-execution))
+            (recur (inc index) order core-db process origin destin origin-elements
+                  (remove #(= (get % key-name) (get element-origin key-name)) destin-elements) id-execution)))
+      (remove-extra-elements 0 order core-db process destin destin-elements id-execution)))
 
 (defn execute-table
-   [order core-db process direction origin destin]
-   (println "Replicando tabela: " (get order :table_origin) "->" (get order :table_destin))
-   (execute-elements 0 order core-db origin destin
+   [order core-db process direction origin destin id-execution]
+   (db-insert! core-db :LogsProcess
+         (generate-logs id-execution
+               (str "Replicando tabela: " (get order :table_origin) "->" (get order :table_destin))
+               5 (:id_user process)))
+   (execute-elements 0 order core-db process origin destin
                      (db-select-all origin (get order :table_origin))
-                     (db-select-all destin (get order :table_destin))))
+                     (db-select-all destin (get order :table_destin)) id-execution))
 
 (defn execute
    ([core-db process direction]
       (let [id (:id process)]
          (execute core-db process (get-table-order core-db id) direction)))
    ([core-db process order direction]
-      (execute 0 core-db process order direction (get-direction-information core-db direction)))
-   ([index core-db process order direction [origin destin]]
+      (let [id-execution (:generated_key (first (db-insert! core-db :Execution
+            {:id_direction (:id direction) :id_user (:id_user process)})))]
+         (db-insert! core-db :LogsProcess
+               (generate-logs id-execution "Inciando replicacao" 5 (:id_user process)))
+
+         (execute 0 core-db process order direction (get-direction-information core-db direction) id-execution)
+
+         (db-insert! core-db :LogsProcess
+               (generate-logs id-execution "Finalizando replicacao" 5 (:id_user process)))
+         (db-update-where! core-db :Execution {:end 1} {:id id-execution})))
+   ([index core-db process order direction [origin destin] id-execution]
       (if (< index (count order))
          (let [db_origin (generate-db (:db_type origin) (:name origin)
                                        (:ip origin) (:port origin)
@@ -84,12 +91,13 @@
                db_destin (generate-db (:db_type destin) (:name destin)
                                              (:ip destin) (:port destin)
                                              (:user_destin direction) (:password_destin direction))]
-               (execute-table (nth order index) core-db process direction db_origin db_destin)
-         (recur (inc index) core-db process order direction [origin destin])))))
+               (execute-table (nth order index) core-db process direction db_origin db_destin id-execution)
+         (recur (inc index) core-db process order direction [origin destin] id-execution)))))
 
 (defn init
    [core-db process-id direction-id]
-   (println "Inciando replicacao de tabelas...")
+
    (execute core-db
          (first (db-select-all-where core-db :Process {:id process-id}))
-         (get-db-direction core-db direction-id)))
+         (get-db-direction core-db direction-id))
+   )
