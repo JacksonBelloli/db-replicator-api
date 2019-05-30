@@ -1,3 +1,6 @@
+-- ****************** SqlDBM: MySQL ******************;
+-- ***************************************************;
+
 DROP TABLE `LogsProcess`;
 
 
@@ -84,15 +87,16 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE `UserDatabase`
 (
- `id`         integer NOT NULL AUTO_INCREMENT ,
- `id_user`    integer NOT NULL ,
- `name`       varchar(50) NOT NULL ,
- `ip`         varchar(255) NOT NULL ,
- `port`       integer NOT NULL ,
- `db_type`    varchar(50) NOT NULL ,
- `dt_insert`  datetime NOT NULL ,
- `dt_update`  datetime ,
- `dt_deleted` datetime ,
+ `id`          integer NOT NULL AUTO_INCREMENT ,
+ `description` varchar(200) NOT NULL ,
+ `name`        varchar(50) NOT NULL ,
+ `ip`          varchar(255) NOT NULL ,
+ `port`        integer NOT NULL ,
+ `db_type`     varchar(50) NOT NULL ,
+ `dt_insert`   datetime NOT NULL ,
+ `dt_update`   datetime ,
+ `dt_deleted`  datetime ,
+ `id_user`     integer NOT NULL ,
 
 PRIMARY KEY (`id`),
 KEY `fkIdx_23` (`id_user`),
@@ -111,13 +115,13 @@ CONSTRAINT `FK_31` FOREIGN KEY `fkIdx_31` (`db_type`) REFERENCES `TypeDatabase` 
 CREATE TABLE `Process`
 (
  `id`          integer NOT NULL AUTO_INCREMENT ,
- `id_user`     integer NOT NULL ,
  `name`        varchar(100) NOT NULL ,
  `description` varchar(400) NOT NULL ,
  `error`       integer NOT NULL ,
  `dt_insert`   datetime NOT NULL ,
  `dt_update`   datetime ,
  `dt_deleted`  datetime ,
+ `id_user`     integer NOT NULL ,
 
 PRIMARY KEY (`id`),
 KEY `fkIdx_38` (`id_user`),
@@ -144,8 +148,11 @@ CREATE TABLE `OrderProcess`
  `dt_insert`     datetime NOT NULL ,
  `dt_update`     datetime ,
  `dt_deleted`    datetime ,
+ `id_user`       integer NOT NULL ,
 
 PRIMARY KEY (`id`),
+KEY `fkIdx_145` (`id_user`),
+CONSTRAINT `FK_145` FOREIGN KEY `fkIdx_145` (`id_user`) REFERENCES `User` (`id`),
 KEY `fkIdx_50` (`id_process`),
 CONSTRAINT `FK_50` FOREIGN KEY `fkIdx_50` (`id_process`) REFERENCES `Process` (`id`)
 );
@@ -176,8 +183,11 @@ CREATE TABLE `DirectionProcess`
  `dt_insert`       datetime NOT NULL ,
  `dt_update`       datetime ,
  `dt_deleted`      datetime ,
+ `id_user`         integer NOT NULL ,
 
 PRIMARY KEY (`id`),
+KEY `fkIdx_148` (`id_user`),
+CONSTRAINT `FK_148` FOREIGN KEY `fkIdx_148` (`id_user`) REFERENCES `User` (`id`),
 KEY `fkIdx_70` (`id_process`),
 CONSTRAINT `FK_70` FOREIGN KEY `fkIdx_70` (`id_process`) REFERENCES `Process` (`id`),
 KEY `fkIdx_95` (`id_origin`),
@@ -202,10 +212,13 @@ CREATE TABLE `Execution`
  `dt_insert`    datetime NOT NULL ,
  `dt_update`    datetime NOT NULL ,
  `dt_delete`    datetime NOT NULL ,
+ `id_user`      integer NOT NULL ,
 
 PRIMARY KEY (`id`),
 KEY `fkIdx_131` (`id_direction`),
-CONSTRAINT `FK_131` FOREIGN KEY `fkIdx_131` (`id_direction`) REFERENCES `DirectionProcess` (`id`)
+CONSTRAINT `FK_131` FOREIGN KEY `fkIdx_131` (`id_direction`) REFERENCES `DirectionProcess` (`id`),
+KEY `fkIdx_151` (`id_user`),
+CONSTRAINT `FK_151` FOREIGN KEY `fkIdx_151` (`id_user`) REFERENCES `User` (`id`)
 );
 
 
@@ -224,37 +237,40 @@ CREATE TABLE `LogsProcess`
  `dt_insert`    datetime NOT NULL ,
  `dt_update`    datetime ,
  `dt_deleted`   datetime ,
+ `id_user`      integer NOT NULL ,
 
 PRIMARY KEY (`id`),
 KEY `fkIdx_121` (`type`),
 CONSTRAINT `FK_121` FOREIGN KEY `fkIdx_121` (`type`) REFERENCES `LogsType` (`id`),
 KEY `fkIdx_136` (`id_execution`),
-CONSTRAINT `FK_136` FOREIGN KEY `fkIdx_136` (`id_execution`) REFERENCES `Execution` (`id`)
+CONSTRAINT `FK_136` FOREIGN KEY `fkIdx_136` (`id_execution`) REFERENCES `Execution` (`id`),
+KEY `fkIdx_154` (`id_user`),
+CONSTRAINT `FK_154` FOREIGN KEY `fkIdx_154` (`id_user`) REFERENCES `User` (`id`)
 );
 
 
-ALTER TABLE `DirectionProcess` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;
-ALTER TABLE `KeyType` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;
-ALTER TABLE `LogsProcess` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;
-ALTER TABLE `OrderProcess` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;
-ALTER TABLE `Process` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;
-ALTER TABLE `TypeDatabase` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;
-ALTER TABLE `User` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;
-ALTER TABLE `UserDatabase` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;
 
-ALTER TABLE `Execution` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;
-ALTER TABLE `LogsType` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;
 
-ALTER TABLE `DirectionProcess` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE `KeyType` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE `LogsProcess` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE `OrderProcess` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE `Process` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE `TypeDatabase` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE `User` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE `UserDatabase` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `DirectionProcess` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;	
+ALTER TABLE `KeyType` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;	
+ALTER TABLE `LogsProcess` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;	
+ALTER TABLE `OrderProcess` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;	
+ALTER TABLE `Process` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;	
+ALTER TABLE `TypeDatabase` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;	
+ALTER TABLE `User` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;	
+ALTER TABLE `UserDatabase` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;	
 
-ALTER TABLE `Execution` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `Execution` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;	
+ALTER TABLE `LogsType` CHANGE `dt_update` `dt_update` TIMESTAMP on update CURRENT_TIMESTAMP NULL DEFAULT NULL;	
+
+ ALTER TABLE `DirectionProcess` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;	
+ALTER TABLE `KeyType` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;	
+ALTER TABLE `LogsProcess` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;	
+ALTER TABLE `OrderProcess` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;	
+ALTER TABLE `Process` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;	
+ALTER TABLE `TypeDatabase` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;	
+ALTER TABLE `User` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;	
+ALTER TABLE `UserDatabase` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;	
+
+ALTER TABLE `Execution` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;	
 ALTER TABLE `LogsType` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-
-
