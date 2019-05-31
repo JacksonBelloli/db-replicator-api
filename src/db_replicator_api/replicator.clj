@@ -32,7 +32,6 @@
 
 (defn execute-changes
    [order core-db process origin destin element id-execution]
-   (println "changes")
    (let [key-name (keyword (get order :key_name))]
       (let [contitions {key-name (get element key-name)} table (get order :table_destin)]
          (if (= 0 (count (db-select-all-where destin table contitions)))
@@ -47,7 +46,7 @@
 
 (defn execute-elements
    [index order core-db process origin destin origin-elements destin-elements id-execution]
-   (println (count origin-elements) (count destin-elements))
+
    (if (< index (count origin-elements))
       (let [element-origin (nth origin-elements index)
             key-name (keyword (get order :key_name))]
@@ -62,18 +61,27 @@
 
 (defn execute-elements-loop
    [start order core-db process direction origin destin id-execution]
-   (println "loop")
    (let [key-name (keyword (get order :key_name))]
       (if (= 0 start)
          (do
-            (println "if")
-         (let [origin-elements (db-select-all-limit origin (get order :table_origin) 100)]
-            (println (count origin-elements))
-            "TO FIX"
-            (execute-elements 0 order core-db process origin destin origin-elements
-                           (db-select-all-where destin (get order :table_destin)
-                                 {key-name (key-name (last origin-elements))})
-                           id-execution))))))
+            (let [origin-elements (db-select-all-limit-order origin (get order :table_origin) 10 key-name)]
+            (let [first-id (key-name (first origin-elements)) last-id (key-name (last origin-elements))]
+               (execute-elements 0 order core-db process origin destin origin-elements
+                              (special-db-select-all-where-order destin (get order :table_destin)
+                                    (str (get order :key_name) " <= " "'" first-id "'"
+                                    " AND " (get order :key_name) " > " "'" last-id "'") key-name)
+                              id-execution)
+               (recur last-id order core-db process direction origin destin id-execution))))
+         (do
+            (let [origin-elements (special-db-select-all-where-limit-order origin (get order :table_origin)
+                  (str (get order :key_name) " > " "'" start "'") 10 key-name)]
+            (let [last-id (key-name (last origin-elements))]
+               (execute-elements 0 order core-db process origin destin origin-elements
+                              (special-db-select-all-where-order destin (get order :table_destin)
+                                    (str (get order :key_name) " <= " "'" last-id "'"
+                                    " AND " (get order :key_name) " > " "'" start "'") key-name)
+                              id-execution)
+               (recur last-id order core-db process direction origin destin id-execution)))))))
 
 (defn execute-table
    [order core-db process direction origin destin id-execution]
@@ -114,5 +122,4 @@
 
    (execute core-db
          (first (db-select-all-where core-db :Process {:id process-id}))
-         (get-db-direction core-db direction-id))
-   )
+         (get-db-direction core-db direction-id)))
