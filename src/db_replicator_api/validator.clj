@@ -28,6 +28,14 @@
       (= (contains?  params :table) false) false
       :else (api-valid? (:code2 params) (:id params))))
 
+(defn delete-valid?
+   [params]
+   (cond
+      (= (contains?  params :id) false) false
+      (= (contains?  params :code2) false) false
+      (= (contains?  params :table) false) false
+      :else (api-valid? (:code2 params) (:id params))))
+
 (defn remove-code-from-arguments
    [arguments]
    (cond

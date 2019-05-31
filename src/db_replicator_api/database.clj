@@ -9,9 +9,24 @@
 
 (defn db-select-all-where
 	[database table-name conditions]
+	(println (sql/select * table-name
+		(sql/where conditions)))
 	(jdbc/query database
 		(sql/select * table-name
 			(sql/where conditions))))
+
+(defn db-select-all-where-limit
+	[database table-name conditions limit]
+	(jdbc/query database
+		(sql/select * table-name
+			(sql/where conditions)
+			(str "LIMIT" limit))))
+
+(defn db-select-all-limit
+	[database table-name limit]
+	(jdbc/query database
+		(sql/select * table-name
+			(str "LIMIT " limit))))
 
 (defn db-select-all-where-order
 	[database table-name conditions order]

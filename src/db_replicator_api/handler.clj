@@ -16,14 +16,10 @@
 		[table & params]
 		(if (validator/get-valid? params)
 			(let [arguments (validator/remove-code-from-arguments params)]
-				(if (= 0 (count arguments))
 					(->
-						(db-select-all config/core-db table)
-						(generate-json))
-					(->
-						(db-select-all-where config/core-db table arguments)
-						(generate-json))))
-			(generate-json {:acess "Acesso Negado"} 401)))
+						(db-select-all-where config/core-db table (conj arguments {:dt_deleted nil}))
+						(generate-json)))
+			(generate-json {:message "Acesso Negado"} 401)))
 
 	(GET "/execute/:process/:direction"
 		[process direction]
@@ -36,13 +32,19 @@
 		request
 			(if (validator/get-valid? (:params request))
 				(db-insert! config/core-db (:table (:params request)) (:body request))
-				(generate-json {:acess "Acesso Negado"} 401)))
+				(generate-json {:message "Acesso Negado"} 401)))
 
 	(PUT "/update/:table/:id"
 		request
 		(if (validator/put-valid? (:params request))
 			(db-update-where! config/core-db (:table (:params request)) (:body request) {:id (:id (:params request))})
-			(generate-json {:acess "Acesso Negado"} 401)))
+			(generate-json {:message "Acesso Negado"} 401)))
+
+	(DELETE "/delete/:table/:id"
+		request
+		(if (validator/delete-valid? (:params request))
+			(db-update-where! config/core-db (:table (:params request)) (:body request) {:id (:id (:params request))})
+			(generate-json {:message "Acesso Negado"} 401)))
 
 	(route/not-found "Not Found"))
 
