@@ -1,6 +1,7 @@
 (ns db-replicator-api.replicator
    (:require [db-replicator-api.database :refer :all]
-            [db-replicator-api.util :refer :all]))
+            [db-replicator-api.util :refer :all]
+            [clojure.core.async :as async]))
 
 (defn get-db
    [core-db db-id]
@@ -68,29 +69,32 @@
             (let [origin-elements (db-select-all-limit-order origin (get order :table_origin) 10 key-name)]
             (if (= 0 (count origin-elements)) true
             (let [first-id (key-name (first origin-elements)) last-id (key-name (last origin-elements))]
-               (execute-elements 0 order core-db process origin destin origin-elements
+               (async/go
+                  (execute-elements 0 order core-db process origin destin origin-elements
                               (special-db-select-all-where-order destin (get order :table_destin)
                                     (str (get order :key_name) " >= " "'" first-id "'"
                                     " AND " (get order :key_name) " <= " "'" last-id "'") key-name)
-                              id-execution)
+                              id-execution))
                (recur last-id order core-db process direction origin destin id-execution)))))
          (do
             (let [origin-elements (special-db-select-all-where-limit-order origin (get order :table_origin)
                   (str (get order :key_name) " > " "'" start "'") 10 key-name)]
             (if (= 0 (count origin-elements)) true
             (let [last-id (key-name (last origin-elements))]
-               (execute-elements 0 order core-db process origin destin origin-elements
+               (async/go
+                  (execute-elements 0 order core-db process origin destin origin-elements
                               (special-db-select-all-where-order destin (get order :table_destin)
                                     (str (get order :key_name) " <= " "'" last-id "'"
                                     " AND " (get order :key_name) " > " "'" start "'") key-name)
-                              id-execution)
+                              id-execution))
                (recur last-id order core-db process direction origin destin id-execution))))))))
 
 (defn execute-table
    [order core-db process direction origin destin id-execution]
    (try
       (insert-logs core-db id-execution
-         (str "Replicando tabela: " (get order :table_origin) "->" (get order :table_destin)) 5 (:id_user process))
+            (str "Replicando tabela: " (get order :table_origin) "->" (get order :table_destin))
+            5 (:id_user process))
       (execute-elements-loop 0 order core-db process direction origin destin id-execution)
    (catch Exception e
       (println e)
@@ -102,7 +106,7 @@
          (execute core-db process (get-table-order core-db id) direction)))
    ([core-db process order direction]
       (let [id-execution (:generated_key (first (db-insert! core-db :Execution
-            {:id_direction (:id direction) :id_user (:id_user process) :threads (:threads direction)})))]
+            {:id_direction (:id direction) :id_user (:id_user process)})))]
          (insert-logs core-db id-execution "Inciando replicacao" 5 (:id_user process))
          (try
             (execute 0 core-db process order direction (get-direction-information core-db direction) id-execution)

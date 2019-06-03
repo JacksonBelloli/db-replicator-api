@@ -267,4 +267,4 @@ ALTER TABLE `UserDatabase` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEF
 ALTER TABLE `Execution` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE `LogsType` CHANGE `dt_insert` `dt_insert` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
-"ADD END on execution"
+ALTER TABLE `DirectionProcess` DROP `threads`;

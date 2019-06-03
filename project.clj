@@ -19,7 +19,8 @@
                  [org.xerial/sqlite-jdbc "3.27.2.1"]
                  [hsqldb/hsqldb "1.8.0.10"]
                  [com.microsoft.sqlserver/mssql-jdbc "7.2.2.jre11"]
-                 [java-jdbc/dsl "0.1.0"]]
+                 [java-jdbc/dsl "0.1.0"]
+                 [org.clojure/core.async "0.4.490"]]
   :plugins [[lein-ring "0.12.5"]
             [lein-midje "3.2.1"]]
   :ring {:handler db-replicator-api.handler/app}
