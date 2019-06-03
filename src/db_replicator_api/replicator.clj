@@ -59,7 +59,7 @@
                      (remove #(= (get % key-name) (get element-origin key-name)) destin-elements) id-execution))
             (recur (inc index) order core-db process origin destin origin-elements
                   (remove #(= (get % key-name) (get element-origin key-name)) destin-elements) id-execution)))
-      (remove-extra-elements 0 order core-db process destin destin-elements id-execution)))
+      (async/go (remove-extra-elements 0 order core-db process destin destin-elements id-execution))))
 
 (defn execute-elements-loop
    [start order core-db process direction origin destin id-execution]
