@@ -46,7 +46,6 @@
 
 (defn execute-elements
    [index order core-db process origin destin origin-elements destin-elements id-execution]
-
    (if (< index (count origin-elements))
       (let [element-origin (nth origin-elements index)
             key-name (keyword (get order :key_name))]
@@ -65,23 +64,25 @@
       (if (= 0 start)
          (do
             (let [origin-elements (db-select-all-limit-order origin (get order :table_origin) 10 key-name)]
+            (if (= 0 (count origin-elements)) true
             (let [first-id (key-name (first origin-elements)) last-id (key-name (last origin-elements))]
                (execute-elements 0 order core-db process origin destin origin-elements
                               (special-db-select-all-where-order destin (get order :table_destin)
-                                    (str (get order :key_name) " <= " "'" first-id "'"
-                                    " AND " (get order :key_name) " > " "'" last-id "'") key-name)
+                                    (str (get order :key_name) " >= " "'" first-id "'"
+                                    " AND " (get order :key_name) " <= " "'" last-id "'") key-name)
                               id-execution)
-               (recur last-id order core-db process direction origin destin id-execution))))
+               (recur last-id order core-db process direction origin destin id-execution)))))
          (do
             (let [origin-elements (special-db-select-all-where-limit-order origin (get order :table_origin)
                   (str (get order :key_name) " > " "'" start "'") 10 key-name)]
+            (if (= 0 (count origin-elements)) true
             (let [last-id (key-name (last origin-elements))]
                (execute-elements 0 order core-db process origin destin origin-elements
                               (special-db-select-all-where-order destin (get order :table_destin)
                                     (str (get order :key_name) " <= " "'" last-id "'"
                                     " AND " (get order :key_name) " > " "'" start "'") key-name)
                               id-execution)
-               (recur last-id order core-db process direction origin destin id-execution)))))))
+               (recur last-id order core-db process direction origin destin id-execution))))))))
 
 (defn execute-table
    [order core-db process direction origin destin id-execution]
@@ -97,7 +98,7 @@
          (execute core-db process (get-table-order core-db id) direction)))
    ([core-db process order direction]
       (let [id-execution (:generated_key (first (db-insert! core-db :Execution
-            {:id_direction (:id direction) :id_user (:id_user process)})))]
+            {:id_direction (:id direction) :id_user (:id_user process) :threads (:threads direction)})))]
          (db-insert! core-db :LogsProcess
                (generate-logs id-execution "Inciando replicacao" 5 (:id_user process)))
 
@@ -119,7 +120,6 @@
 
 (defn init
    [core-db process-id direction-id]
-
    (execute core-db
          (first (db-select-all-where core-db :Process {:id process-id}))
          (get-db-direction core-db direction-id)))

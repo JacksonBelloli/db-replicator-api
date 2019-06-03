@@ -17,7 +17,7 @@
 		(if (validator/get-valid? params)
 			(let [arguments (validator/remove-code-from-arguments params)]
 					(->
-						(db-select-all-where config/core-db table (conj arguments {:dt_deleted nil}))
+						(db-select-all-where config/core-db table arguments)
 						(generate-json)))
 			(generate-json {:message "Acesso Negado"} 401)))
 
