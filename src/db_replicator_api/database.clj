@@ -50,6 +50,17 @@
 	(jdbc/query database
 		(sql/select * table-name " WHERE " conditions (sql/order-by order) (str " LIMIT " limit))))
 
+(defn special-db-select-execution-logs
+	[database execution-id]
+	(first
+		(jdbc/query database
+			["SELECT SUM(type=5) AS 'info',
+						SUM(type=1) AS 'insert',
+						SUM(type=2) AS 'update',
+						SUM(type=3) AS 'delete',
+						SUM(type=4) AS 'error'
+						FROM `LogsProcess` WHERE id_execution = ?" execution-id])))
+
 (defn db-insert!
 	[database table-name data]
 	(jdbc/insert! database table-name data))

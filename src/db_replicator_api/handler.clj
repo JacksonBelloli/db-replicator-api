@@ -21,12 +21,18 @@
 						(generate-json)))
 			(generate-json {:message "Acesso Negado"} 401)))
 
+	(GET "/get/Execution/:id"
+		[id & params]
+		(if (validator/get-valid? params)
+			(generate-execution id config/core-db)
+			(generate-json {:message "Acesso Negado"} 401)))
+
 	(GET "/execute/:process/:direction"
 		[process direction]
 		(println "Processo" process " direcao " direction "iniciado...")
 		(->
 			(replicator/init config/core-db process direction)
-			(generate-json)))
+			(generate-execution config/core-db)))
 
 	(POST "/post/:table"
 		request
@@ -47,7 +53,6 @@
 			(generate-json {:message "Acesso Negado"} 401)))
 
 	(route/not-found "Not Found"))
-
 
 (def app
 	(->

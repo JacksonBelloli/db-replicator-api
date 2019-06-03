@@ -1,5 +1,10 @@
 (ns db-replicator-api.util
-		(:require [cheshire.core :as cheshire]))
+		(:require [cheshire.core :as cheshire]
+						[db-replicator-api.database :refer :all]))
+
+(defn get-execution-content
+	[core-db id]
+	(special-db-select-execution-logs core-db id))
 
 (defn generate-json
 	"Generate a json output to the api"
@@ -8,6 +13,13 @@
 	 :headers  {"Content-Type" "application/json; charset=utf8"}
 	 :body (cheshire/generate-string content)})
 
+ (defn generate-execution
+ 	"Generate a json output to the api"
+ 	[id core-db & [status]]
+	(println (get-execution-content core-db id))
+ 	{:status (or status 200)
+ 	 :headers  {"Content-Type" "application/json; charset=utf8"}
+ 	 :body (cheshire/generate-string (get-execution-content core-db id))})
 
  (import 'java.security.MessageDigest
          'java.math.BigInteger)

@@ -115,7 +115,8 @@
             (insert-logs core-db id-execution "ERRO ao execultar execulcao" 4 (:id_user process)) 1))
          (println "Finalizando replicacao")
          (insert-logs core-db id-execution "Finalizando replicacao" 5 (:id_user process))
-         (db-update-where! core-db :Execution {:end 1} {:id id-execution})))
+         (db-update-where! core-db :Execution {:end 1} {:id id-execution})
+         id-execution))
    ([index core-db process order direction [origin destin] id-execution]
       (if (< index (count order))
          (let [db_origin (generate-db (:db_type origin) (:name origin)
